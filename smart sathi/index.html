@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParkEase | Parking Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#dashboard" aria-label="ParkEase home"><span>🅿️</span> ParkEase</a>
+    <nav aria-label="Main navigation">
+      <a class="nav-link active" href="#dashboard" data-view="dashboard">Dashboard</a>
+      <a class="nav-link" href="#park" data-view="park">Park</a>
+      <a class="nav-link" href="#release" data-view="release">Release</a>
+      <a class="nav-link" href="#history" data-view="history">History</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="dashboard" class="view active">
+      <div class="page-heading"><div><p class="eyebrow">OVERVIEW</p><h1>Parking dashboard</h1><p>Keep your lot moving with a quick glance.</p></div><button class="button primary" data-go="park">+ Park vehicle</button></div>
+      <div class="stats" aria-label="Parking statistics">
+        <article class="stat-card"><span class="stat-icon blue">▦</span><div><span class="stat-label">Total slots</span><strong id="totalSlots">20</strong></div></article>
+        <article class="stat-card"><span class="stat-icon red">●</span><div><span class="stat-label">Occupied</span><strong id="occupiedSlots">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon green">✓</span><div><span class="stat-label">Available</span><strong id="availableSlots">20</strong></div></article>
+        <article class="stat-card"><span class="stat-icon amber">₹</span><div><span class="stat-label">Today's earnings</span><strong id="todayEarnings">₹0</strong></div></article>
+      </div>
+      <div class="panel"><div class="panel-heading"><div><h2>Parking slots</h2><p><span class="dot free"></span> Free <span class="dot taken"></span> Occupied</p></div><span id="slotStatus" class="muted"></span></div><div id="slotGrid" class="slot-grid"></div></div>
+    </section>
+
+    <section id="park" class="view">
+      <div class="page-heading"><div><p class="eyebrow">NEW ENTRY</p><h1>Park a vehicle</h1><p>Enter the details below to assign a parking space.</p></div></div>
+      <div class="form-layout"><form id="parkForm" class="panel form-card" novalidate>
+        <label for="vehicleNumber">Vehicle number <span>*</span></label><input id="vehicleNumber" name="vehicleNumber" placeholder="e.g. MH 12 AB 1234" autocomplete="off" required>
+        <label for="vehicleType">Vehicle type <span>*</span></label><select id="vehicleType" name="vehicleType" required><option value="">Select type</option><option value="Bike">Bike — ₹10/hr</option><option value="Car">Car — ₹20/hr</option></select>
+        <label for="ownerName">Owner name <small>(optional)</small></label><input id="ownerName" name="ownerName" placeholder="e.g. Priya Sharma">
+        <label for="slotSelect">Parking slot</label><select id="slotSelect" name="slot"><option value="auto">Auto-assign first free slot</option></select><p id="parkHint" class="field-help">We’ll assign the first available slot.</p>
+        <button class="button primary full" type="submit">Park vehicle</button></form>
+        <aside class="info-card"><span class="big-emoji">🚗</span><h2>Quick parking</h2><p>The entry time is recorded automatically. Select a slot yourself, or leave it on auto-assign.</p><div class="rate-line"><span>🏍️ Bike</span><strong>₹10 / hour</strong></div><div class="rate-line"><span>🚙 Car</span><strong>₹20 / hour</strong></div><small>Charges round up to the next hour, with a minimum of one hour.</small></aside>
+      </div>
+    </section>
+
+    <section id="release" class="view">
+      <div class="page-heading"><div><p class="eyebrow">EXIT</p><h1>Release a vehicle</h1><p>Search by vehicle number or choose an occupied slot.</p></div></div>
+      <div class="panel release-panel"><label for="releaseSearch">Find a parked vehicle</label><div class="search-row"><input id="releaseSearch" placeholder="Enter vehicle number" autocomplete="off"><button id="searchVehicle" class="button primary" type="button">Search</button></div><p class="field-help">Or select from vehicles currently in the lot.</p><div id="occupiedList" class="occupied-list"></div></div>
+    </section>
+
+    <section id="history" class="view">
+      <div class="page-heading"><div><p class="eyebrow">RECORDS</p><h1>Parking history</h1><p>All completed parking visits are saved on this device.</p></div></div>
+      <div class="panel"><div class="table-tools"><input id="historySearch" placeholder="🔎 Search vehicle number or slot" aria-label="Search history"><span id="historyCount" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Type</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Fee</th></tr></thead><tbody id="historyBody"></tbody></table></div><div id="historyEmpty" class="empty-state">🧾<h3>No parking history yet</h3><p>Released vehicles will appear here.</p></div></div>
+    </section>
+  </main>
+
+  <div id="confirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden><div class="modal"><button class="modal-close" data-close="confirmModal" aria-label="Close">×</button><span class="modal-icon">👋</span><h2 id="confirmTitle">Release this vehicle?</h2><div id="releaseDetails" class="receipt-details"></div><p>Exit time will be recorded now and the parking fee will be finalized.</p><div class="modal-actions"><button class="button secondary" data-close="confirmModal">Cancel</button><button id="confirmRelease" class="button danger">Release vehicle</button></div></div></div>
+  <div id="receiptModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="receiptTitle" hidden><div class="modal receipt"><button class="modal-close" data-close="receiptModal" aria-label="Close">×</button><span class="modal-icon">✅</span><p class="eyebrow">PAYMENT RECEIPT</p><h2 id="receiptTitle">Vehicle released</h2><div id="receiptDetails" class="receipt-details"></div><div class="receipt-total"><span>Total paid</span><strong id="receiptFee">₹0</strong></div><button class="button primary full" data-close="receiptModal">Done</button></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
